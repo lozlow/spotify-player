@@ -5,6 +5,10 @@ var Player = require('../src/Player'),
     ds = new DummySpotifyPlayer(),
     player = new Player(ds);
 
+var PLAYER_STATE_STOPPED = -1,
+    PLAYER_STATE_PAUSED = 0,
+    PLAYER_STATE_PLAYING = 1;
+
 describe('Player', function() {
     describe('.play()', function() {
         it('should emit trackChanged', function() {
@@ -20,15 +24,16 @@ describe('Player', function() {
             player.play({id: 123});
         });
 
-        it('should emit playerPlaying', function() {
+        it('should emit playerStateChange', function() {
             var errTimeout = setTimeout(function () {
                 assert(false, 'event did not fire');
             }, 100);
 
-            player.on('playerPlaying', function() {
+            player.on('playerStateChange', function(state) {
                 clearTimeout(errTimeout);
-                assert(true);
+                assert.strictEqual(PLAYER_STATE_PLAYING, state);
             });
+            player.removeAllListeners();
 
             player.play({id: 123});
         });
@@ -53,15 +58,16 @@ describe('Player', function() {
 
     describe('.pause()', function() {
 
-        it('should emit playerPaused', function() {
+        it('should emit playerStateChange', function() {
             var errTimeout = setTimeout(function () {
                 assert(false, 'event did not fire');
             }, 100);
 
-            player.on('playerPaused', function() {
+            player.on('playerStateChange', function(state) {
                 clearTimeout(errTimeout);
-                assert(true);
+                assert.strictEqual(PLAYER_STATE_PAUSED, state);
             });
+            player.removeAllListeners();
 
             player.pause();
         });
@@ -82,15 +88,17 @@ describe('Player', function() {
 
     describe('.resume()', function() {
 
-        it('should emit playerPlaying', function() {
+        it('should emit playerStateChange', function() {
             var errTimeout = setTimeout(function () {
                 assert(false, 'event did not fire');
             }, 100);
 
-            player.on('playerPlaying', function() {
+            player.on('playerStateChange', function(state) {
                 clearTimeout(errTimeout);
-                assert(true);
+                assert.strictEqual(PLAYER_STATE_PLAYING, state);
             });
+            player.removeAllListeners();
+            
             player.play({id: 123});
             player.pause();
             player.resume();
@@ -112,15 +120,16 @@ describe('Player', function() {
 
     describe('.stop()', function() {
 
-        it('should emit playerStopped', function() {
+        it('should emit playerStateChange', function() {
             var errTimeout = setTimeout(function () {
                 assert(false, 'event did not fire');
             }, 100);
 
-            player.on('playerStopped', function() {
+            player.on('playerStateChange', function(state) {
                 clearTimeout(errTimeout);
-                assert(true);
+                assert.strictEqual(PLAYER_STATE_STOPPED, state);
             });
+            player.removeAllListeners();
 
             player.stop();
         });
@@ -149,6 +158,26 @@ describe('Player', function() {
         it('isStopped should be true', function() {
             assert.strictEqual(true, player.isStopped());
         });
+
+    });
+
+    describe('.getState()', function() {
+
+        it('should equal 1 when playing', function() {
+            player.play();
+            assert.strictEqual(PLAYER_STATE_PLAYING, player.getState());
+        });
+
+        it('should equal 0 when paused', function() {
+            player.pause();
+            assert.strictEqual(PLAYER_STATE_PAUSED, player.getState());
+        });
+
+        it('should equal -1 when stopped', function() {
+            player.stop();
+            assert.strictEqual(PLAYER_STATE_STOPPED, player.getState());
+        });
+
 
     });
 

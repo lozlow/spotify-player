@@ -2,11 +2,14 @@ var events = require('events'),
     util   = require('util'),
     winston = require('winston');
 
+var PLAYER_STATE_STOPPED = -1,
+    PLAYER_STATE_PAUSED = 0,
+    PLAYER_STATE_PLAYING = 1;
+
 var nsPlayer,
     currentTrack,
     currentSecond,
-    playing,
-    paused,
+    playerState,
     timeEmitterId;
 
 /**
@@ -38,8 +41,7 @@ var Player = function(spotifyObj) {
 
     currentTrack = {};
     currentSecond = 0;
-    playing = false;
-    paused = false;
+    playerState = PLAYER_STATE_STOPPED;
 };
 
 
@@ -55,11 +57,10 @@ util.inherits(Player, events.EventEmitter);
  */
 Player.prototype.play = function(track) {
     nsPlayer.play(track);
-    playing = true;
-    paused = false;
+    playerState = PLAYER_STATE_PLAYING;
     currentTrack = track;
     this.emit('trackChanged', track);
-    this.emit('playerPlaying');
+    this.emit('playerStateChange', playerState);
 
     winston.debug('play called');
     winston.debug(JSON.stringify(track));
@@ -71,11 +72,10 @@ Player.prototype.play = function(track) {
  *   and emits playerPaused
  */
 Player.prototype.pause = function() {
-    if (playing) {
+    if (playerState == PLAYER_STATE_PLAYING) {
         nsPlayer.pause();
-        playing = false;
-        paused = true;
-        this.emit('playerPaused');
+        playerState = PLAYER_STATE_PAUSED;
+        this.emit('playerStateChange', playerState);
     }
 
     winston.debug('pause called');
@@ -87,11 +87,10 @@ Player.prototype.pause = function() {
  *   and emits playerPlaying
  */
 Player.prototype.resume = function() {
-    if (paused) {
+    if (playerState == PLAYER_STATE_PAUSED) {
         nsPlayer.resume();
-        paused = false;
-        playing = true;
-        this.emit('playerPlaying');
+        playerState = PLAYER_STATE_PLAYING;
+        this.emit('playerStateChange', playerState);
     }
 
     winston.debug('resume called');
@@ -103,13 +102,12 @@ Player.prototype.resume = function() {
  *   player state and emits playerStopped
  */
 Player.prototype.stop = function() {
-    if (playing || paused) {
+    if (playerState == PLAYER_STATE_PLAYING || playerState == PLAYER_STATE_PAUSED) {
         nsPlayer.stop();
-        playing = false;
-        paused = false;
+        playerState = PLAYER_STATE_STOPPED;
         currentTrack = {};
         currentSecond = 0;
-        this.emit('playerStopped');
+        this.emit('playerStateChange', playerState);
     }
 
     winston.debug('stop called');
@@ -118,24 +116,34 @@ Player.prototype.stop = function() {
 /* Accessors */
 
 /**
+ * getState() - returns the player state
+ *   -1 - Player stopped
+ *    0 - Player paused
+ *    1 - Player playing
+ */
+Player.prototype.getState = function() {
+    return playerState;
+}
+
+/**
  * isPlaying() - returns playing player state
  */
 Player.prototype.isPlaying = function() {
-    return playing;
+    return (playerState == PLAYER_STATE_PLAYING);
 }
 
 /**
  * isPaused() - returns paused player state
  */
 Player.prototype.isPaused = function() {
-    return paused;
+    return (playerState == PLAYER_STATE_PAUSED);
 }
 
 /**
  * isStopped() - returns true if the player is stopped
  */
  Player.prototype.isStopped = function() {
-    return (!playing && !paused);
+    return (playerState == PLAYER_STATE_STOPPED);
  }
 
 /**
