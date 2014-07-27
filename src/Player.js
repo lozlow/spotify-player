@@ -181,6 +181,7 @@ var timeEmitter = function(player) {
 var endOfTrack = function(player) {
     return function() {
         player.stop();
+        player.emit('trackEnded');
     };
 };
 

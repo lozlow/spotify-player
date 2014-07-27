@@ -8,6 +8,8 @@ var trackQueue;
  * Constructor
  */
 var TrackQueue = function() {
+    events.EventEmitter.call(this);
+    
     trackQueue = new array();
 
     trackQueue.on('add', addHandler(this));
