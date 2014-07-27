@@ -10,5 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "node-spotify": "*"
+  },
+  "devDependencies": {
+    "mocha": "^1.21.1"
   }
 }
