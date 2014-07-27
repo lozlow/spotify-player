@@ -4,6 +4,9 @@ var events = require('events'),
 
 var trackQueue;
 
+/**
+ * Constructor
+ */
 var TrackQueue = function() {
     trackQueue = new array();
 
@@ -14,14 +17,27 @@ var TrackQueue = function() {
 /* Set up the EventEmitter inheritance */
 util.inherits(TrackQueue, events.EventEmitter);
 
+/**
+ * enqueue(track) - adds the given track to the queue
+ *   (at end)
+ */
 TrackQueue.prototype.enqueue = function(track) {
     trackQueue.push(track);
 };
 
+/**
+ * queueNext(track) - adds the given track to the
+ *   front of the queue
+ */
 TrackQueue.prototype.queueNext = function(track) {
     trackQueue.unshift(track);
 }
 
+/**
+ * clearQueue() - detaches handler for remove event,
+ *   clears the contents of the queue, emits queueCleared,
+ *   re-attaches handler for remove event
+ */
 TrackQueue.prototype.clearQueue =  function() {
     trackQueue.off('remove');
 
@@ -33,24 +49,40 @@ TrackQueue.prototype.clearQueue =  function() {
     this.emit('queueCleared');
 }
 
+/**
+ * getQueue() - returns the queue as an array
+ */
 TrackQueue.prototype.getQueue = function() {
     return trackQueue.toArray();
 }
 
+/**
+ * poll() - returns and removes the head of the queue
+ */
 TrackQueue.prototype.poll = function() {
     return trackQueue.shift();
 }
 
+/**
+ * peek() - returns the head of the queue but does not
+ *   remove it
+ */
 TrackQueue.prototype.peek = function() {
     return trackQueue[0];
 }
 
+/**
+ * addHandler() - returns a function to handle the add event
+ */
 var addHandler = function(trackQueueObj) {
     return function(elem, index) {
         trackQueueObj.emit('trackEnqueued', elem, index);
     }
 }
 
+/**
+ * removeHandler() - returns a function to handle the add event
+ */
 var removeHandler = function(trackQueueObj) {
     return function(elem, index) {
         trackQueueObj.emit('trackRemoved', elem, index);

@@ -1,4 +1,4 @@
-# spotify-player [![Build Status](https://travis-ci.org/lozlow/spotify-player.svg)](https://travis-ci.org/lozlow/spotify-player)
+# spotify-player [![Build Status](https://travis-ci.org/lozlow/spotify-player.svg?branch=master)](https://travis-ci.org/lozlow/spotify-player)
 
 This library builds on the [node-spotify](https://github.com/FrontierPsychiatrist/node-spotify) module and provides additional objects Player and PlayerQueue, which produce events suited for updating a player and playlist queue.
 
