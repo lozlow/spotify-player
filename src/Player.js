@@ -167,16 +167,14 @@ Player.prototype.getCurrentSecond = function() {
  */
 var timeEmitter = function(player) {
 
-    return function() {
-        timeEmitterId = setInterval(function() {
-            if (nsPlayer.currentSecond != currentSecond) {
-                currentSecond = nsPlayer.currentSecond;
-                player.emit('timeChanged', currentSecond);
-            }
-        }, 250);
+    timeEmitterId = setInterval(function() {
+        if (nsPlayer.currentSecond != currentSecond) {
+            currentSecond = nsPlayer.currentSecond;
+            player.emit('timeChanged', currentSecond);
+        }
+    }, 250);
 
-        winston.debug('creating TimeEmitter interval');
-    };
+    winston.debug('creating TimeEmitter interval');
 }
 
 /* Ancillary functions */
