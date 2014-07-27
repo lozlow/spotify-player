@@ -9,7 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "node-spotify": "*"
+    "node-spotify": "*",
+    "winston": "^0.7.3"
   },
   "devDependencies": {
     "mocha": "^1.21.1"

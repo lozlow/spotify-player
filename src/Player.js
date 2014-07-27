@@ -1,5 +1,6 @@
-var events = require('events')
-    util   = require('util')
+var events = require('events'),
+    util   = require('util'),
+    winston = require('winston');
 
 var nsPlayer,
     currentTrack,
@@ -15,10 +16,17 @@ var Player = function(spotifyObj) {
     events.EventEmitter.call(this);
 
     nsPlayer = spotifyObj.player;
-    //nsPlayer.on('endOfTrack', Player.stop);
+    nsPlayer.on({
+         endOfTrack: endOfTrack(this)
+    });
 
     this.on('playerPlaying', timeEmitter(this));
+    this.on('trackChanged', function() {
+        winston.debug('clearing TimeEmitter interval');
+        clearInterval(timeEmitterId);
+    });
     this.on('playerStopped', function() {
+        winston.debug('clearing TimeEmitter interval');
         clearInterval(timeEmitterId);
     });
 
@@ -27,6 +35,7 @@ var Player = function(spotifyObj) {
     isPlaying = false;
     isPaused = false;
 };
+
 
 /* Set up the EventEmitter inheritance */
 util.inherits(Player, events.EventEmitter);
@@ -39,6 +48,9 @@ Player.prototype.play = function(track) {
     currentTrack = track;
     this.emit('trackChanged', track);
     this.emit('playerPlaying');
+    
+    winston.debug('play called');
+    winston.debug(JSON.stringify(track));
 }
 
 Player.prototype.pause = function() {
@@ -46,6 +58,8 @@ Player.prototype.pause = function() {
     isPlaying = false;
     isPaused = true;
     this.emit('playerPaused');
+
+    winston.debug('pause called');
 }
 
 Player.prototype.resume = function() {
@@ -55,6 +69,8 @@ Player.prototype.resume = function() {
         this.isPlaying = true;
         this.emit('playerPlaying');
     }
+
+    winston.debug('resume called');
 }
 
 Player.prototype.stop = function() {
@@ -65,7 +81,29 @@ Player.prototype.stop = function() {
         currentSecond = 0;
         this.emit('playerStopped');
     }
+
+    winston.debug('stop called');
 }
+
+/* Accessors */
+
+Player.prototype.isPlaying = function() {
+    return isPlaying;
+}
+
+Player.prototype.isPaused = function() {
+    return isPaused;
+}
+
+Player.prototype.getCurrentTrack = function() {
+    return currentTrack;
+}
+
+Player.prototype.getCurrentSecond = function() {
+    return currentSecond;
+}
+
+/* TimeEmitter function */
 
 var timeEmitter = function(player) {
 
@@ -76,7 +114,17 @@ var timeEmitter = function(player) {
                 player.emit('timeChanged', currentSecond);
             }
         }, 250);
+
+        winston.debug('creating TimeEmitter interval');
     };
 }
+
+/* Ancillary functions */
+
+var endOfTrack = function(player) {
+    return function() {
+        player.stop();
+    };
+};
 
 module.exports = Player;
