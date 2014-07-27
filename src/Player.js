@@ -25,16 +25,15 @@ var Player = function(spotifyObj) {
          endOfTrack: endOfTrack(this)
     });
 
-    this.on('playerPlaying', timeEmitter(this));
+    this.on('playerStateChange', function(state) {
+        if (state == PLAYER_STATE_PLAYING) {
+            timeEmitter(this);
+        } else {
+            winston.debug('clearing TimeEmitter interval');
+            clearInterval(timeEmitterId);
+        }
+    });
     this.on('trackChanged', function() {
-        winston.debug('clearing TimeEmitter interval');
-        clearInterval(timeEmitterId);
-    });
-    this.on('playerPaused', function() {
-        winston.debug('clearing TimeEmitter interval');
-        clearInterval(timeEmitterId);
-    });
-    this.on('playerStopped', function() {
         winston.debug('clearing TimeEmitter interval');
         clearInterval(timeEmitterId);
     });
