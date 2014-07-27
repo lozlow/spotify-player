@@ -34,11 +34,11 @@ describe('Player', function() {
         });
 
         it('isPlaying should be true', function() {
-            assert(true, player.isPlaying());
+            assert.strictEqual(true, player.isPlaying());
         });
 
         it('isPaused should be false', function() {
-            assert(false, player.isPaused());
+            assert.strictEqual(false, player.isPaused());
         });
 
         it('currentTrack should equal the track passed to play()', function() {
@@ -63,11 +63,11 @@ describe('Player', function() {
         });
 
         it('isPlaying should be false', function() {
-            assert(false, player.isPlaying());
+            assert.strictEqual(false, player.isPlaying());
         });
 
         it('isPaused should be true', function() {
-            assert(true, player.isPaused());
+            assert.strictEqual(true, player.isPaused());
         });
 
     });
@@ -83,16 +83,17 @@ describe('Player', function() {
                 clearTimeout(errTimeout);
                 assert(true);
             });
-
+            player.play({id: 123});
+            player.pause();
             player.resume();
         });
 
         it('isPlaying should be true', function() {
-            assert(true, player.isPlaying());
+            assert.strictEqual(true, player.isPlaying());
         });
 
         it('isPaused should be false', function() {
-            assert(false, player.isPaused());
+            assert.strictEqual(false, player.isPaused());
         });
 
     });
@@ -113,11 +114,11 @@ describe('Player', function() {
         });
 
         it('isPlaying should be false', function() {
-            assert(false, player.isPlaying());
+            assert.strictEqual(false, player.isPlaying());
         });
 
         it('isPaused should be false', function() {
-            assert(false, player.isPaused());
+            assert.strictEqual(false, player.isPaused());
         });
 
     });

@@ -49,12 +49,12 @@ util.inherits(Player, events.EventEmitter);
 Player.prototype.play = function(track) {
     nsPlayer.play(track);
     playing = true;
+    paused = false;
     currentTrack = track;
     this.emit('trackChanged', track);
     this.emit('playerPlaying');
     
     winston.debug('play called');
-console.log('playing', playing, 'paused', paused);
     winston.debug(JSON.stringify(track));
 }
 
@@ -70,8 +70,8 @@ Player.prototype.pause = function() {
 Player.prototype.resume = function() {
     if (paused) {
         nsPlayer.resume();
-        this.paused = false;
-        this.playing = true;
+        paused = false;
+        playing = true;
         this.emit('playerPlaying');
     }
 
@@ -81,7 +81,7 @@ Player.prototype.resume = function() {
 Player.prototype.stop = function() {
     if (playing) {
         nsPlayer.stop();
-        this.playing = false;
+        playing = false;
         currentTrack = {};
         currentSecond = 0;
         this.emit('playerStopped');
