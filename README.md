@@ -11,3 +11,6 @@ This library builds on the node-spotify module and provides the objects Player a
 ## Usage Example
 
 ## TODOs
+
+Allow multiple tracks to be enqueued at once (easy)
+Improve tests (beforeEach etc) (easy)
