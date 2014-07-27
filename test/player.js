@@ -113,6 +113,19 @@ describe('Player', function() {
             player.stop();
         });
 
+        it('should emit trackEnded when end of track', function() {
+            var errTimeout = setTimeout(function () {
+                assert(false, 'event did not fire');
+            }, 100);
+
+            player.on('trackEnded', function() {
+                clearTimeout(errTimeout);
+                assert(true);
+            });
+
+            ds.player.trackEnded();
+        });
+
         it('isPlaying should be false', function() {
             assert.strictEqual(false, player.isPlaying());
         });

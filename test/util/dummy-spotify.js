@@ -1,5 +1,5 @@
-// To be passed to SpotifyPlayer
-// needs to implement dummy player methods (play()/pause()/etc)
+var events = require('events'),
+    util   = require('util');
 
 var DummySpotifyPlayer = function() {
     this.player = new Player();
@@ -7,6 +7,9 @@ var DummySpotifyPlayer = function() {
 
 var Player = function() {
 }
+
+/* Set up the EventEmitter inheritance */
+util.inherits(Player, events.EventEmitter);
 
 Player.prototype.play = function() {
    return true;
@@ -19,6 +22,9 @@ Player.prototype.resume = function() {
 }
 Player.prototype.stop = function() {
    return true;
+}
+Player.prototype.trackEnded = function() {
+   this.emit('endOfTrack');
 }
 Player.prototype.on = function() {
    return true;
