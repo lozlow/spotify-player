@@ -114,4 +114,15 @@ describe('TrackQueue', function() {
             assert({id: 142536}, trackQueue.getQueue()[0])
         });
     });
+
+    describe('.getQueueLength()', function() {
+        it('should return correct queue length', function() {
+            trackQueue.clearQueue();
+            assert.strictEqual(0, trackQueue.getQueueLength());
+            trackQueue.enqueue({id: 123});
+            assert.strictEqual(1, trackQueue.getQueueLength());
+            trackQueue.enqueue({id: 456});
+            assert.strictEqual(2, trackQueue.getQueueLength());
+        });
+    });
 });

@@ -132,6 +132,13 @@ Player.prototype.isPaused = function() {
 }
 
 /**
+ * isStopped() - returns true if the player is stopped
+ */
+ Player.prototype.isStopped = function() {
+    return (!playing && !paused);
+ }
+
+/**
  * getCurrentTrack() - returns currently loaded track
  */
 Player.prototype.getCurrentTrack = function() {
@@ -174,7 +181,6 @@ var timeEmitter = function(player) {
 var endOfTrack = function(player) {
     return function() {
         player.stop();
-        player.emit('trackEnded');
     };
 };
 

@@ -57,6 +57,13 @@ TrackQueue.prototype.getQueue = function() {
 }
 
 /**
+ * getQueueLength() - returns the queue length
+ */
+TrackQueue.prototype.getQueueLength = function() {
+    return trackQueue.length;
+}
+
+/**
  * poll() - returns and removes the head of the queue
  */
 TrackQueue.prototype.poll = function() {
