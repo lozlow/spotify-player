@@ -23,6 +23,9 @@ Player.prototype.resume = function() {
 Player.prototype.stop = function() {
    return true;
 }
+Player.prototype.seek = function() {
+   return true;
+}
 Player.prototype.trackEnded = function() {
    this.emit('endOfTrack');
 }

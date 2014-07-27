@@ -20,22 +20,23 @@ var nsPlayer,
 var Player = function(spotifyObj) {
     events.EventEmitter.call(this);
 
+    this.PLAYER_STATE_STOPPED = PLAYER_STATE_STOPPED;
+    this.PLAYER_STATE_PAUSED = PLAYER_STATE_PAUSED;
+    this.PLAYER_STATE_PLAYING = PLAYER_STATE_PLAYING;
+
     nsPlayer = spotifyObj.player;
     nsPlayer.on({
          endOfTrack: endOfTrack(this)
     });
 
     this.on('playerStateChange', function(state) {
-        if (state == PLAYER_STATE_PLAYING) {
-            timeEmitter(this);
-        } else {
+        if (timeEmitterId) {
             winston.debug('clearing TimeEmitter interval');
             clearInterval(timeEmitterId);
         }
-    });
-    this.on('trackChanged', function() {
-        winston.debug('clearing TimeEmitter interval');
-        clearInterval(timeEmitterId);
+        if (state == PLAYER_STATE_PLAYING) {
+            timeEmitter(this);
+        }
     });
 
     currentTrack = {};
@@ -56,10 +57,9 @@ util.inherits(Player, events.EventEmitter);
  */
 Player.prototype.play = function(track) {
     nsPlayer.play(track);
-    playerState = PLAYER_STATE_PLAYING;
     currentTrack = track;
     this.emit('trackChanged', track);
-    this.emit('playerStateChange', playerState);
+    updateState(this, PLAYER_STATE_PLAYING);
 
     winston.debug('play called');
     winston.debug(JSON.stringify(track));
@@ -73,8 +73,7 @@ Player.prototype.play = function(track) {
 Player.prototype.pause = function() {
     if (playerState == PLAYER_STATE_PLAYING) {
         nsPlayer.pause();
-        playerState = PLAYER_STATE_PAUSED;
-        this.emit('playerStateChange', playerState);
+        updateState(this, PLAYER_STATE_PAUSED);
     }
 
     winston.debug('pause called');
@@ -88,8 +87,7 @@ Player.prototype.pause = function() {
 Player.prototype.resume = function() {
     if (playerState == PLAYER_STATE_PAUSED) {
         nsPlayer.resume();
-        playerState = PLAYER_STATE_PLAYING;
-        this.emit('playerStateChange', playerState);
+        updateState(this, PLAYER_STATE_PLAYING);
     }
 
     winston.debug('resume called');
@@ -103,13 +101,23 @@ Player.prototype.resume = function() {
 Player.prototype.stop = function() {
     if (playerState == PLAYER_STATE_PLAYING || playerState == PLAYER_STATE_PAUSED) {
         nsPlayer.stop();
-        playerState = PLAYER_STATE_STOPPED;
         currentTrack = {};
+        this.emit('trackChanged', currentTrack);
         currentSecond = 0;
-        this.emit('playerStateChange', playerState);
+        updateState(this, PLAYER_STATE_STOPPED);
     }
 
     winston.debug('stop called');
+}
+
+/**
+ * seek(seekTime) - moves the play head to the specified position
+ */
+Player.prototype.seek = function(seekTime) {
+    if (playerState == PLAYER_STATE_PLAYING || playerState == PLAYER_STATE_PAUSED) {
+        nsPlayer.seek(seekTime);
+        this.emit('playerSeeking', seekTime);
+    }
 }
 
 /* Accessors */
@@ -189,5 +197,19 @@ var endOfTrack = function(player) {
         player.emit('trackEnded');
     };
 };
+
+/**
+ * updateState(player, state) - updates the player state and emits
+ *   an event if necessary
+ *
+ * player - the Player object
+ * state - the (possibly) new state
+ */
+var updateState = function(player, state) {
+    if (playerState != state) {
+        playerState = state;
+        player.emit('playerStateChange', playerState);
+    }
+}
 
 module.exports = Player;

@@ -20,11 +20,15 @@ var TrackQueue = function() {
 util.inherits(TrackQueue, events.EventEmitter);
 
 /**
- * enqueue(track) - adds the given track to the queue
- *   (at end)
+ * enqueue(track, [idx]) - adds the given track to the queue
+ *   (at end) or, at idx if supplied
  */
-TrackQueue.prototype.enqueue = function(track) {
-    trackQueue.push(track);
+TrackQueue.prototype.enqueue = function(track, idx) {
+    if (idx) {
+        trackQueue.splice(idx, 0, track);
+    } else {
+        trackQueue.push(track);
+    }
 };
 
 /**

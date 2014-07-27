@@ -161,6 +161,25 @@ describe('Player', function() {
 
     });
 
+    describe('.seek()', function() {
+
+        it('should emit playerSeeking', function() {
+            var errTimeout = setTimeout(function () {
+                assert(false, 'event did not fire');
+            }, 100);
+
+            player.on('playerSeeking', function(seekTime) {
+                clearTimeout(errTimeout);
+                assert.strictEqual(123, seekTime);
+            });
+            player.removeAllListeners();
+
+            player.play({id: 123});
+            player.seek(123);
+        });
+
+    });
+
     describe('.getState()', function() {
 
         it('should equal 1 when playing', function() {
