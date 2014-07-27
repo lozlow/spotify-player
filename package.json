@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "array": "^0.4.3",
+    "assert": "^1.1.1",
     "node-spotify": "*",
     "winston": "^0.7.3"
   },

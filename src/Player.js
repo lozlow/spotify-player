@@ -5,8 +5,8 @@ var events = require('events'),
 var nsPlayer,
     currentTrack,
     currentSecond,
-    isPlaying,
-    isPaused,
+    playing,
+    paused,
     timeEmitterId;
 
 /**
@@ -25,6 +25,10 @@ var Player = function(spotifyObj) {
         winston.debug('clearing TimeEmitter interval');
         clearInterval(timeEmitterId);
     });
+    this.on('playerPaused', function() {
+        winston.debug('clearing TimeEmitter interval');
+        clearInterval(timeEmitterId);
+    });
     this.on('playerStopped', function() {
         winston.debug('clearing TimeEmitter interval');
         clearInterval(timeEmitterId);
@@ -32,8 +36,8 @@ var Player = function(spotifyObj) {
 
     currentTrack = {};
     currentSecond = 0;
-    isPlaying = false;
-    isPaused = false;
+    playing = false;
+    paused = false;
 };
 
 
@@ -44,29 +48,30 @@ util.inherits(Player, events.EventEmitter);
 
 Player.prototype.play = function(track) {
     nsPlayer.play(track);
-    isPlaying = true;
+    playing = true;
     currentTrack = track;
     this.emit('trackChanged', track);
     this.emit('playerPlaying');
     
     winston.debug('play called');
+console.log('playing', playing, 'paused', paused);
     winston.debug(JSON.stringify(track));
 }
 
 Player.prototype.pause = function() {
     nsPlayer.pause();
-    isPlaying = false;
-    isPaused = true;
+    playing = false;
+    paused = true;
     this.emit('playerPaused');
 
     winston.debug('pause called');
 }
 
 Player.prototype.resume = function() {
-    if (isPaused) {
+    if (paused) {
         nsPlayer.resume();
-        this.isPaused = false;
-        this.isPlaying = true;
+        this.paused = false;
+        this.playing = true;
         this.emit('playerPlaying');
     }
 
@@ -74,9 +79,9 @@ Player.prototype.resume = function() {
 }
 
 Player.prototype.stop = function() {
-    if (isPlaying) {
+    if (playing) {
         nsPlayer.stop();
-        this.isPlaying = false;
+        this.playing = false;
         currentTrack = {};
         currentSecond = 0;
         this.emit('playerStopped');
@@ -88,11 +93,11 @@ Player.prototype.stop = function() {
 /* Accessors */
 
 Player.prototype.isPlaying = function() {
-    return isPlaying;
+    return playing;
 }
 
 Player.prototype.isPaused = function() {
-    return isPaused;
+    return paused;
 }
 
 Player.prototype.getCurrentTrack = function() {
