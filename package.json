@@ -1,20 +1,36 @@
 {
   "name": "spotify-player",
-  "version": "0.0.0",
-  "description": "Extends node-spotify's player",
-  "main": "index.js",
+  "version": "0.0.1",
+  "description": "Extends node-spotify, providing events suitable for a player UI",
+  "main": "src/spotify-player.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/mocha/bin/mocha ./test/"
   },
-  "author": "",
+  "author": "Pete Shaw",
   "license": "ISC",
   "dependencies": {
     "array": "^0.4.3",
-    "assert": "^1.1.1",
-    "node-spotify": "*",
     "winston": "^0.7.3"
   },
   "devDependencies": {
-    "mocha": "^1.21.1"
-  }
+    "assert": "^1.1.1",
+    "mocha": "^1.21.3"
+  },
+  "directories": {
+    "example": "examples",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lozlow/spotify-player.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lozlow/spotify-player/issues"
+  },
+  "homepage": "https://github.com/lozlow/spotify-player",
+  "keywords": [
+    "spotify",
+    "music",
+    "player"
+  ]
 }
