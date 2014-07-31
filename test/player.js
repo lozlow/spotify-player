@@ -178,6 +178,10 @@ describe('Player', function() {
             player.seek(123);
         });
 
+        it('should not allow negative time values', function() {
+            assert.equal(false, player.seek(-20));
+        });
+
     });
 
     describe('.getState()', function() {

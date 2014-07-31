@@ -53,7 +53,7 @@ util.inherits(Player, events.EventEmitter);
 /**
  * play(track) - plays a given track, updates
  *   the player state and emits events
- *   trackChanged and playerPlaying
+ *   trackChanged
  */
 Player.prototype.play = function(track) {
     nsPlayer.play(track);
@@ -68,7 +68,6 @@ Player.prototype.play = function(track) {
 /**
  * pause() - pauses the player if it is
  *   playing, updates the player state
- *   and emits playerPaused
  */
 Player.prototype.pause = function() {
     if (playerState == PLAYER_STATE_PLAYING) {
@@ -82,7 +81,6 @@ Player.prototype.pause = function() {
 /**
  * resume() - resumes the player if it is
  *   paused, updates the player state
- *   and emits playerPlaying
  */
 Player.prototype.resume = function() {
     if (playerState == PLAYER_STATE_PAUSED) {
@@ -96,15 +94,14 @@ Player.prototype.resume = function() {
 /**
  * stop() - stops the player if it is
  *   playing or paused, updates the
- *   player state and emits playerStopped
+ *   player state
  */
 Player.prototype.stop = function() {
     if (playerState == PLAYER_STATE_PLAYING || playerState == PLAYER_STATE_PAUSED) {
         nsPlayer.stop();
-        currentTrack = {};
-        this.emit('trackChanged', currentTrack);
-        currentSecond = 0;
         updateState(this, PLAYER_STATE_STOPPED);
+        currentTrack = {};
+        currentSecond = 0;
     }
 
     winston.debug('stop called');
@@ -114,6 +111,10 @@ Player.prototype.stop = function() {
  * seek(seekTime) - moves the play head to the specified position
  */
 Player.prototype.seek = function(seekTime) {
+    if (seekTime < 0) {
+        // Ignore negative seek values
+        return false;
+    }
     if (playerState == PLAYER_STATE_PLAYING || playerState == PLAYER_STATE_PAUSED) {
         nsPlayer.seek(seekTime);
         this.emit('playerSeeking', seekTime);
