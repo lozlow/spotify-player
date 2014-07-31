@@ -24,7 +24,7 @@ util.inherits(TrackQueue, events.EventEmitter);
  *   (at end) or, at idx if supplied
  */
 TrackQueue.prototype.enqueue = function(track, idx) {
-    if (idx) {
+    if (idx || idx === 0) {
         trackQueue.splice(idx, 0, track);
     } else {
         trackQueue.push(track);
