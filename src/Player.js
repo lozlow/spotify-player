@@ -3,8 +3,8 @@ var events = require('events'),
     winston = require('winston');
 
 var PLAYER_STATE_STOPPED = -1,
-    PLAYER_STATE_PAUSED = 0,
-    PLAYER_STATE_PLAYING = 1;
+    PLAYER_STATE_PAUSED  =  0,
+    PLAYER_STATE_PLAYING =  1;
 
 var nsPlayer,
     currentTrack,
@@ -177,7 +177,7 @@ Player.prototype.getCurrentSecond = function() {
 var timeEmitter = function(player) {
 
     timeEmitterId = setInterval(function() {
-        if (nsPlayer.currentSecond != currentSecond) {
+        if (nsPlayer.currentSecond != currentSecond && playerState == PLAYER_STATE_PLAYING) {
             currentSecond = nsPlayer.currentSecond;
             player.emit('timeChanged', currentSecond);
         }

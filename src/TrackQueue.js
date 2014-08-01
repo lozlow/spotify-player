@@ -36,7 +36,7 @@ TrackQueue.prototype.enqueue = function(track, idx) {
  *   front of the queue
  */
 TrackQueue.prototype.queueNext = function(track) {
-    trackQueue.unshift(track);
+    this.enqueue(track, 0);
 }
 
 /**

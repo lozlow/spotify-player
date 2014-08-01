@@ -1,12 +1,17 @@
 var Player = require('./Player'),
-    TrackQueue = require('./TrackQueue');
+    TrackQueue = require('./TrackQueue'),
+    spotify;
 
 var trckEnqueuedFunc;
 
-var SpotifyPlayer = function(spotifyObj) {
-  this.player = new Player(spotifyObj);
+var SpotifyPlayer = function(spotifyOpt, readyFn) {
+  this.spotify = require('node-spotify')(spotifyOpt);
+  this.player = new Player(this.spotify);
   this.queue = new TrackQueue();
-  this.spotify = spotifyObj;
+
+  this.spotify.on({
+      ready: readyFn
+  });
 
   this.player.on('trackEnded', handleEndTrack(this));
   trckEnqueuedFunc = handleTrackEnqueued(this);
